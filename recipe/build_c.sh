@@ -14,5 +14,7 @@ cmake .. \
       ${BUILD_TYPE}
 
 make all -j${CPU_COUNT}
-make test -j${CPU_COUNT}
+if [[ "$CONDA_BUILD_CROSS_COMPILATION" != "1" ]]; then
+    make test -j${CPU_COUNT}
+fi
 make install -j${CPU_COUNT}
