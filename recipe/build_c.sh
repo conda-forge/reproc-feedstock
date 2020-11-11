@@ -7,7 +7,7 @@ else
     BUILD_TYPE="-DBUILD_SHARED_LIBS=ON"
 fi
 
-cmake .. \
+cmake ${CMAKE_ARGS} .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DREPROC_TEST=ON \
