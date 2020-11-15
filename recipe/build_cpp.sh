@@ -8,6 +8,7 @@ else
 fi
 
 cmake ${CMAKE_ARGS} .. \
+      -DBUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_INSTALL_LIBDIR=lib \
       -DREPROC++=ON \

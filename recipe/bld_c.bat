@@ -9,10 +9,10 @@ IF not x%PKG_NAME:static=%==x%PKG_NAME% (
 )
 
 cmake .. ^
-      -D CMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-      -D CMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
-	  -G "NMake Makefiles" ^
+      -G "NMake Makefiles" ^
+      -DBUILD_TYPE=Release ^
       -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
+      -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
       -DCMAKE_INSTALL_LIBDIR=lib ^
       -DREPROC_TEST=ON ^
       %BUILD_TYPE%
