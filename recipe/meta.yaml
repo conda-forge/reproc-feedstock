@@ -19,7 +19,7 @@ outputs:
     script: bld_c.bat   # [win]
     build:
       run_exports:
-        - '{{ pin_subpackage('reproc', 'x.x') }}'
+        - "{{ pin_subpackage('reproc', 'x.x') }}"
     requirements:
       build:
         - {{ compiler("c") }}
