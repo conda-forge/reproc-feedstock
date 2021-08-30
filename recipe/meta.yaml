@@ -1,4 +1,4 @@
-{% set version = "14.2.1" %}
+{% set version = "14.2.3" %}
 
 package:
   name: reproc
@@ -6,7 +6,7 @@ package:
 
 source:
   - url: https://github.com/DaanDeMeyer/reproc/archive/v{{ version }}.tar.gz
-    sha256: f75f0524bdbf03813c126655f83d9c1b6a5b695c8e840bd62cd7aa61a96c66e3
+    sha256: ea87db7a780a81bc27bce3e6c8e5f31b831fb8a1d06c6b5c2e1c2554d1c55e00
     patches:
       - apple_gettime.patch  # [osx]
 
@@ -19,7 +19,7 @@ outputs:
     script: bld_c.bat   # [win]
     build:
       run_exports:
-        - '{{ pin_subpackage('reproc', 'x.x') }}'
+        - "{{ pin_subpackage('reproc', 'x.x') }}"
     requirements:
       build:
         - {{ compiler("c") }}
