@@ -10,9 +10,10 @@ source:
     sha256: 55c780f7faa5c8cabd83ebbb84b68e5e0e09732de70a129f6b3c801e905415dd
     patches:
       - apple_gettime.patch  # [osx]
+      - 103-remove-fd-limit.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
