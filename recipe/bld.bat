@@ -1,7 +1,6 @@
 cmake -B build-dyn/ ^
     -G Ninja ^
     -D CMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL" ^
-    -D CMAKE_RELEASE_POSTFIX="_static" ^
     -D REPROC_TEST=OFF ^
     -D BUILD_SHARED_LIBS=ON ^
     -D REPROC++=ON ^
