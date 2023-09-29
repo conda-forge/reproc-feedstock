@@ -1,8 +1,9 @@
+# WRANING remove .post from package.version
 {% set version = "14.2.4" %}
 
 package:
   name: reproc-split
-  version: '{{ version }}'
+  version: '{{ version }}.post0'
 
 source:
   - url: https://github.com/DaanDeMeyer/reproc/archive/v{{ version }}.tar.gz
