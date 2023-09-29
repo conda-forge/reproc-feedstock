@@ -119,6 +119,8 @@ outputs:
         - '{{ compiler("c") }}'
         - cmake
         - ninja
+      run_constrained:
+        - reproc < 0
     test:
       files:
         - test-c/
@@ -166,6 +168,8 @@ outputs:
         - "{{ pin_subpackage('reproc-static', exact=True ) }}"
       run:
         - "{{ pin_subpackage('reproc-static', exact=True ) }}"
+      run_constrained:
+        - reproc-cpp < 0
     test:
       files:
         - test-cpp/
