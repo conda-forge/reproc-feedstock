@@ -11,7 +11,7 @@ source:
       - apple_gettime.patch  # [osx]
 
 build:
-  number: 0
+  number: 2
 
 outputs:
   - name: reproc
@@ -124,4 +124,3 @@ extra:
   recipe-maintainers:
     - wolfv
     - DaanDeMeyer
-    - AntoinePrv
