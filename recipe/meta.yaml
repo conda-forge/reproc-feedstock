@@ -41,6 +41,7 @@ outputs:
         - cmake
         - ninja
       commands:
+        - '@echo on'  # [win]
         # Positive file tests
         - test -f ${PREFIX}/include/reproc/run.h                       # [unix]
         - if not exist %LIBRARY_PREFIX%\include\reproc\run.h (exit 1)  # [win]
@@ -92,6 +93,7 @@ outputs:
         - cmake
         - ninja
       commands:
+        - '@echo on'  # [win]
         # Positive file tests
         - test -f ${PREFIX}/include/reproc++/run.hpp                       # [unix]
         - if not exist %LIBRARY_PREFIX%\include\reproc++\run.hpp (exit 1)  # [win]
@@ -129,6 +131,7 @@ outputs:
         - cmake
         - ninja
       commands:
+        - '@echo on'  # [win]
         # Positive file tests
         - test -f ${PREFIX}/include/reproc/run.h                       # [unix]
         - if not exist %LIBRARY_PREFIX%\include\reproc\run.h (exit 1)  # [win]
@@ -179,6 +182,7 @@ outputs:
         - cmake
         - ninja
       commands:
+        - '@echo on'  # [win]
         # Positive file tests
         - test -f ${PREFIX}/include/reproc++/reproc.hpp                       # [unix]
         - if not exist %LIBRARY_PREFIX%\include\reproc++\reproc.hpp (exit 1)  # [win]
