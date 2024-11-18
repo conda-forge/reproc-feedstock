@@ -1,5 +1,5 @@
 # WRANING remove .post from package.version
-{% set version = "14.2.4" %}
+{% set version = "14.2.5" %}
 
 package:
   name: reproc-split
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/DaanDeMeyer/reproc/archive/v{{ version }}.tar.gz
-    sha256: 55c780f7faa5c8cabd83ebbb84b68e5e0e09732de70a129f6b3c801e905415dd
+    sha256: 69467be0cfc80734b821c54ada263c8f1439f964314063f76b7cf256c3dc7ee8
     patches:
       - apple_gettime.patch  # [osx]
       # When the open file descriptor limit > 1048576, reproc
@@ -17,32 +17,34 @@ source:
       - 103-remove-fd-limit.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - {{ compiler("c") }}
+    - {{ stdlib("c") }}
+    - {{ compiler("cxx") }}
     - cmake
     - ninja
 
 outputs:
   - name: reproc
-    script: install.sh   # [unix]
+    script: install.sh  # [unix]
     script: install.bat  # [win]
     build:
       run_exports:
-        - "{{ pin_subpackage('reproc', 'x.x') }}"
+        - {{ pin_subpackage('reproc', 'x.x') }}
     requirements:
       build:
-        - '{{ compiler("c") }}'
+        - {{ compiler("c") }}
+        - {{ stdlib("c") }}
         - cmake
         - ninja
     test:
       files:
         - test-c/
       requires:
-        - '{{ compiler("c") }}'
+        - {{ compiler("c") }}
         - cmake
         - ninja
       commands:
@@ -74,27 +76,28 @@ outputs:
         - cmake --build build-test-c/ --target test
 
   - name: reproc-cpp
-    script: install.sh   # [unix]
+    script: install.sh  # [unix]
     script: install.bat  # [win]
     build:
       run_exports:
-        - '{{ pin_subpackage('reproc-cpp', 'x.x') }}'
+        - {{ pin_subpackage('reproc-cpp', 'x.x') }}
     requirements:
       build:
-        - '{{ compiler("c") }}'
-        - '{{ compiler("cxx") }}'
+        - {{ compiler("c") }}
+        - {{ stdlib("c") }}
+        - {{ compiler("cxx") }}
         - cmake
         - ninja
       host:
-        - "{{ pin_subpackage('reproc', exact=True ) }}"
+        - {{ pin_subpackage('reproc', exact=True ) }}
       run:
-        - "{{ pin_subpackage('reproc', exact=True ) }}"
+        - {{ pin_subpackage('reproc', exact=True ) }}
     test:
       files:
         - test-cpp/
       requires:
-        - '{{ compiler("c") }}'
-        - '{{ compiler("cxx") }}'
+        - {{ compiler("c") }}
+        - {{ compiler("cxx") }}
         - cmake
         - ninja
       commands:
@@ -119,11 +122,12 @@ outputs:
         - cmake --build build-test-cpp/ --target test
 
   - name: reproc-static
-    script: install.sh   # [unix]
+    script: install.sh  # [unix]
     script: install.bat  # [win]
     requirements:
       build:
-        - '{{ compiler("c") }}'
+        - {{ compiler("c") }}
+        - {{ stdlib("c") }}
         - cmake
         - ninja
       run_constrained:
@@ -132,7 +136,7 @@ outputs:
       files:
         - test-c/
       requires:
-        - '{{ compiler("c") }}'
+        - {{ compiler("c") }}
         - cmake
         - ninja
       commands:
@@ -164,26 +168,27 @@ outputs:
         - cmake --build build-test-c/ --target test
 
   - name: reproc-cpp-static
-    script: install.sh   # [unix]
+    script: install.sh  # [unix]
     script: install.bat  # [win]
     requirements:
       build:
-        - '{{ compiler("c") }}'
-        - '{{ compiler("cxx") }}'
+        - {{ compiler("c") }}
+        - {{ stdlib("c") }}
+        - {{ compiler("cxx") }}
         - cmake
         - ninja
       host:
-        - "{{ pin_subpackage('reproc-static', exact=True ) }}"
+        - {{ pin_subpackage('reproc-static', exact=True ) }}
       run:
-        - "{{ pin_subpackage('reproc-static', exact=True ) }}"
+        - {{ pin_subpackage('reproc-static', exact=True ) }}
       run_constrained:
         - reproc-cpp < 0
     test:
       files:
         - test-cpp/
       requires:
-        - '{{ compiler("c") }}'
-        - '{{ compiler("cxx") }}'
+        - {{ compiler("c") }}
+        - {{ compiler("cxx") }}
         - cmake
         - ninja
       commands:
