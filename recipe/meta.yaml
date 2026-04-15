@@ -1,13 +1,13 @@
 # WRANING remove .post from package.version
-{% set version = "14.2.5" %}
+{% set version = "14.2.6" %}
 
 package:
   name: reproc-split
   version: '{{ version }}.post0'
 
 source:
-  - url: https://github.com/DaanDeMeyer/reproc/archive/v{{ version }}.tar.gz
-    sha256: 69467be0cfc80734b821c54ada263c8f1439f964314063f76b7cf256c3dc7ee8
+  - url: https://github.com/DaanDeMeyer/reproc/archive/{{ version }}.tar.gz
+    sha256: c7843f59538384946a91dae69f715c6d079f38b0cb650f6247f72311146646ed
     patches:
       - apple_gettime.patch  # [osx]
       # When the open file descriptor limit > 1048576, reproc
