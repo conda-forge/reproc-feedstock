@@ -15,9 +15,13 @@ source:
       # As upstream is inactive, pick up the patch in the feedstock instead
       # https://github.com/DaanDeMeyer/reproc/pull/103
       - 103-remove-fd-limit.patch
+      # Process options are passed incorrectly to the child process, causing it to fail when using the non-blocking API
+      # As upstream is inactive, pick up the patch in the feedstock instead until new release is made
+      # https://github.com/DaanDeMeyer/reproc/pull/110
+      - 110-nonblocking-fix.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
