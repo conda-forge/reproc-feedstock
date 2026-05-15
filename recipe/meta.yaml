@@ -15,9 +15,14 @@ source:
       # As upstream is inactive, pick up the patch in the feedstock instead
       # https://github.com/DaanDeMeyer/reproc/pull/103
       - 103-remove-fd-limit.patch
+      # When version 14.2.7 was released, the cmake project version was not so it still
+      # appears as version 14.2.4. This patch sets the cmake project version to the correct version.
+      # As upstream is inactive, pick up the patch in the feedstock instead
+      # https://github.com/DaanDeMeyer/reproc/pull/121
+      - 121-fix-cmake-version.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
