@@ -1,0 +1,266 @@
+schema_version: 1
+
+context:
+  version: "14.2.7"
+
+recipe:
+  name: reproc-split
+  version: ${{ version }}.post0
+
+source:
+  url: https://github.com/DaanDeMeyer/reproc/archive/v${{ version }}.tar.gz
+  sha256: 77914ba566356d86986db240ecdb1762dfdd55bb1e8e127d016d9c5c4c9300e8
+  patches:
+    - if: osx
+      then: apple_gettime.patch
+    # When the open file descriptor limit > 1048576, reproc
+    # (and therefore micromamba) aborts when starting a new process
+    # As upstream is inactive, pick up the patch in the feedstock instead
+    # https://github.com/DaanDeMeyer/reproc/pull/103
+    - 103-remove-fd-limit.patch
+    # When version 14.2.7 was released, the cmake project version was not so it still
+    # appears as version 14.2.4. This patch sets the cmake project version to the correct version.
+    # As upstream is inactive, pick up the patch in the feedstock instead
+    # https://github.com/DaanDeMeyer/reproc/pull/121
+    - 121-fix-cmake-version.patch
+
+build:
+  number: 2
+
+outputs:
+  - staging:
+      name: reproc-build
+    build:
+      script:
+        file: ${{ "build.sh" if unix else "build.bat" }}
+    requirements:
+      build:
+        - ${{ compiler("c") }}
+        - ${{ stdlib("c") }}
+        - ${{ compiler("cxx") }}
+        - cmake
+        - ninja
+
+  - package:
+      name: reproc
+    inherit: reproc-build
+    build:
+      script:
+        file: ${{ "install.sh" if unix else "install.bat" }}
+    requirements:
+      run_exports:
+        - ${{ pin_subpackage("reproc", upper_bound="x.x") }}
+      ignore_run_exports:
+        from_package:
+          - ${{ compiler("cxx") }}
+    tests:
+      - script:
+          - if: win
+            then:
+              - "@echo on"
+              # Positive file tests
+              - if not exist %LIBRARY_PREFIX%\include\reproc\run.h (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\reproc.lib (exit 1)
+              - if not exist %LIBRARY_PREFIX%\bin\reproc.dll (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\reproc\reproc-config.cmake (exit 1)
+              # Negative file tests
+              - if exist %LIBRARY_PREFIX%\include\reproc++\run.hpp (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc_static.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+            else:
+              # Positive file tests
+              - test -f ${PREFIX}/include/reproc/run.h
+              - test -f ${PREFIX}/lib/libreproc${SHLIB_EXT}
+              - test -f ${PREFIX}/lib/cmake/reproc/reproc-config.cmake
+              # Negative file tests
+              - test ! -f ${PREFIX}/include/reproc++/run.hpp
+              - test ! -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
+              - test ! -f ${PREFIX}/lib/libreproc.a
+              - test ! -f ${PREFIX}/lib/libreproc++.a
+              - test ! -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
+          # Run a test that links to the library
+          - if: win
+            then: cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
+            else: cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
+          - cmake --build build-test-c/
+          - cmake --build build-test-c/ --target test
+        files:
+          recipe:
+            - test-c/
+        requirements:
+          build:
+            - ${{ compiler("c") }}
+            - cmake
+            - ninja
+
+  - package:
+      name: reproc-cpp
+    inherit: reproc-build
+    build:
+      script:
+        file: ${{ "install.sh" if unix else "install.bat" }}
+    requirements:
+      host:
+        - ${{ pin_subpackage("reproc", exact=True) }}
+      run:
+        - ${{ pin_subpackage("reproc", exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage("reproc-cpp", upper_bound="x.x") }}
+    tests:
+      - script:
+          - if: win
+            then:
+              - "@echo on"
+              # Positive file tests
+              - if not exist %LIBRARY_PREFIX%\include\reproc++\run.hpp (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
+              - if not exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+              # Negative file tests
+              - if exist %LIBRARY_PREFIX%\lib\reproc_static.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
+            else:
+              # Positive file tests
+              - test -f ${PREFIX}/include/reproc++/run.hpp
+              - test -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
+              - test -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
+              # Negative file tests
+              - test ! -f ${PREFIX}/lib/libreproc.a
+              - test ! -f ${PREFIX}/lib/libreproc++.a
+          # Run a test that links to the library
+          - if: win
+            then: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
+            else: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
+          - cmake --build build-test-cpp/
+          - cmake --build build-test-cpp/ --target test
+        files:
+          recipe:
+            - test-cpp/
+        requirements:
+          build:
+            - ${{ compiler("c") }}
+            - ${{ compiler("cxx") }}
+            - cmake
+            - ninja
+
+  - package:
+      name: reproc-static
+    inherit: reproc-build
+    build:
+      script:
+        file: ${{ "install.sh" if unix else "install.bat" }}
+    requirements:
+      run_constraints:
+        - reproc <0
+      ignore_run_exports:
+        from_package:
+          - ${{ compiler("cxx") }}
+    tests:
+      - script:
+          - if: win
+            then:
+              - "@echo on"
+              # Positive file tests
+              - if not exist %LIBRARY_PREFIX%\include\reproc\run.h (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\reproc_static.lib (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\reproc\reproc-config.cmake (exit 1)
+              # Negative file tests
+              - if exist %LIBRARY_PREFIX%\include\reproc++\reproc.hpp (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\bin\reproc.dll (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+            else:
+              # Positive file tests
+              - test -f ${PREFIX}/include/reproc/run.h
+              - test -f ${PREFIX}/lib/libreproc.a
+              - test -f ${PREFIX}/lib/cmake/reproc/reproc-config.cmake
+              # Negative file tests
+              - test ! -f ${PREFIX}/include/reproc++/reproc.hpp
+              - test ! -f ${PREFIX}/lib/libreproc++.a
+              - test ! -f ${PREFIX}/lib/libreproc${SHLIB_EXT}
+              - test ! -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
+              - test ! -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
+          # Run a test that links to the library
+          - if: win
+            then: cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
+            else: cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
+          - cmake --build build-test-c/
+          - cmake --build build-test-c/ --target test
+        files:
+          recipe:
+            - test-c/
+        requirements:
+          build:
+            - ${{ compiler("c") }}
+            - cmake
+            - ninja
+
+  - package:
+      name: reproc-cpp-static
+    inherit: reproc-build
+    build:
+      script:
+        file: ${{ "install.sh" if unix else "install.bat" }}
+    requirements:
+      host:
+        - ${{ pin_subpackage("reproc-static", exact=True) }}
+      run:
+        - ${{ pin_subpackage("reproc-static", exact=True) }}
+      run_constraints:
+        - reproc-cpp <0
+    tests:
+      - script:
+          - if: win
+            then:
+              - "@echo on"
+              # Positive file tests
+              - if not exist %LIBRARY_PREFIX%\include\reproc++\reproc.hpp (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+              # Negative file tests
+              - if exist %LIBRARY_PREFIX%\lib\reproc.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\bin\reproc.dll (exit 1)
+              - if exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
+              - if exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
+            else:
+              # Positive file tests
+              - test -f ${PREFIX}/include/reproc++/reproc.hpp
+              - test -f ${PREFIX}/lib/libreproc++.a
+              - test -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
+              # Negative file tests
+              - test ! -f ${PREFIX}/lib/libreproc${SHLIB_EXT}
+              - test ! -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
+          # Run a test that links to the library
+          - if: win
+            then: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
+            else: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
+          - cmake --build build-test-cpp/
+          - cmake --build build-test-cpp/ --target test
+        files:
+          recipe:
+            - test-cpp/
+        requirements:
+          build:
+            - ${{ compiler("c") }}
+            - ${{ compiler("cxx") }}
+            - cmake
+            - ninja
+
+about:
+  homepage: https://github.com/DaanDeMeyer/reproc
+  license: MIT
+  license_file: LICENSE
+  summary: reproc (Redirected Process) is a cross-platform C/C++ library that simplifies starting, stopping and communicating with external programs.
+  repository: https://github.com/DaanDeMeyer/reproc
+
+extra:
+  recipe-maintainers:
+    - AntoinePrv
+    - wolfv
+    - DaanDeMeyer
