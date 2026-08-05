@@ -48,6 +48,8 @@ outputs:
       script:
         file: ${{ "install.sh" if unix else "install.bat" }}
     requirements:
+      build:
+        - cmake
       run_exports:
         - ${{ pin_subpackage("reproc", upper_bound="x.x") }}
       ignore_run_exports:
@@ -103,6 +105,8 @@ outputs:
       script:
         file: ${{ "install.sh" if unix else "install.bat" }}
     requirements:
+      build:
+        - cmake
       host:
         - ${{ pin_subpackage("reproc", exact=True) }}
       run:
@@ -153,6 +157,8 @@ outputs:
       script:
         file: ${{ "install.sh" if unix else "install.bat" }}
     requirements:
+      build:
+        - cmake
       run_constraints:
         - reproc <0
       ignore_run_exports:
@@ -208,6 +214,8 @@ outputs:
       script:
         file: ${{ "install.sh" if unix else "install.bat" }}
     requirements:
+      build:
+        - cmake
       host:
         - ${{ pin_subpackage("reproc-static", exact=True) }}
       run:
