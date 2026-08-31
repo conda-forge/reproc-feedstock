@@ -1,15 +1,15 @@
 schema_version: 1
 
 context:
-  version: "14.2.7"
+  version: "14.2.8"
 
 recipe:
   name: reproc-split
   version: ${{ version }}.post0
 
 source:
-  url: https://github.com/DaanDeMeyer/reproc/archive/v${{ version }}.tar.gz
-  sha256: 77914ba566356d86986db240ecdb1762dfdd55bb1e8e127d016d9c5c4c9300e8
+  url: https://github.com/DaanDeMeyer/reproc/archive/${{ version }}.tar.gz
+  sha256: 27c3b452bfc419a2deda23969aa10c77909c4ff9e71c549eb65d09ae6aa7aa32
   patches:
     - if: osx
       then: apple_gettime.patch
@@ -25,7 +25,7 @@ source:
     - 121-fix-cmake-version.patch
 
 build:
-  number: 2
+  number: 0
 
 outputs:
   - staging:
@@ -72,6 +72,7 @@ outputs:
               - if exist %LIBRARY_PREFIX%\lib\reproc_static.lib (exit 1)
               - if exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
               - if exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+              - cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
             else:
               # Positive file tests
               - test -f ${PREFIX}/include/reproc/run.h
@@ -84,9 +85,7 @@ outputs:
               - test ! -f ${PREFIX}/lib/libreproc++.a
               - test ! -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
           # Run a test that links to the library
-          - if: win
-            then: cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
-            else: cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
+              - cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
           - cmake --build build-test-c/
           - cmake --build build-test-c/ --target test
         files:
@@ -126,6 +125,7 @@ outputs:
               # Negative file tests
               - if exist %LIBRARY_PREFIX%\lib\reproc_static.lib (exit 1)
               - if exist %LIBRARY_PREFIX%\lib\reproc++_static.lib (exit 1)
+              - cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
             else:
               # Positive file tests
               - test -f ${PREFIX}/include/reproc++/run.hpp
@@ -135,9 +135,7 @@ outputs:
               - test ! -f ${PREFIX}/lib/libreproc.a
               - test ! -f ${PREFIX}/lib/libreproc++.a
           # Run a test that links to the library
-          - if: win
-            then: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
-            else: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
+              - cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
           - cmake --build build-test-cpp/
           - cmake --build build-test-cpp/ --target test
         files:
@@ -181,6 +179,7 @@ outputs:
               - if exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
               - if exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
               - if exist %LIBRARY_PREFIX%\lib\cmake\reproc++\reproc++-config.cmake (exit 1)
+              - cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
             else:
               # Positive file tests
               - test -f ${PREFIX}/include/reproc/run.h
@@ -193,9 +192,7 @@ outputs:
               - test ! -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
               - test ! -f ${PREFIX}/lib/cmake/reproc++/reproc++-config.cmake
           # Run a test that links to the library
-          - if: win
-            then: cmake -G Ninja -S test-c/ -B build-test-c/ %CMAKE_ARGS%
-            else: cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
+              - cmake -G Ninja -S test-c/ -B build-test-c/ ${CMAKE_ARGS}
           - cmake --build build-test-c/
           - cmake --build build-test-c/ --target test
         files:
@@ -236,6 +233,7 @@ outputs:
               - if exist %LIBRARY_PREFIX%\bin\reproc.dll (exit 1)
               - if exist %LIBRARY_PREFIX%\lib\reproc++.lib (exit 1)
               - if exist %LIBRARY_PREFIX%\bin\reproc++.dll (exit 1)
+              - cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
             else:
               # Positive file tests
               - test -f ${PREFIX}/include/reproc++/reproc.hpp
@@ -245,9 +243,7 @@ outputs:
               - test ! -f ${PREFIX}/lib/libreproc${SHLIB_EXT}
               - test ! -f ${PREFIX}/lib/libreproc++${SHLIB_EXT}
           # Run a test that links to the library
-          - if: win
-            then: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ %CMAKE_ARGS%
-            else: cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
+              - cmake -G Ninja -S test-cpp/ -B build-test-cpp/ ${CMAKE_ARGS}
           - cmake --build build-test-cpp/
           - cmake --build build-test-cpp/ --target test
         files:
